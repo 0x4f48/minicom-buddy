@@ -66,13 +66,10 @@ static int get_full_cmdline( char* cmdline, char* search_path, char * target_nam
 
         //printf("rd_cnt: %d, <%s>\n", rd_cnt, rd_buffer );
         if ( rd_cnt <= 0 )
-            return -1;
-
-        if ( (line_cnt == 0) && strncmp(rd_buffer, target_name, strlen(target_name)) )
-            return -1;
+            goto err_exit;
 
         line_cnt++;
-        
+
         for( i = 0 ; i < rd_cnt; i++)
         {
 
@@ -85,9 +82,39 @@ static int get_full_cmdline( char* cmdline, char* search_path, char * target_nam
     }
 
     close(cmd_fd);
+    return 0;
 
-    return 0;  
+err_exit:
+    close(cmd_fd);
+    return -1;
 }
+
+static int is_target_process( char *search_path, char *target_name )
+{
+    int comm_fd;
+    int rd_cnt = 0;
+    char rd_buffer[MAX_CMD_LEN];
+
+    comm_fd = open ( search_path, O_RDONLY );
+
+    if ( comm_fd < 0 )
+        return -1;
+
+    rd_cnt = read( comm_fd, rd_buffer, MAX_CMD_LEN );
+
+    if ( rd_cnt <= 0 )
+        goto err_exit;
+
+    close(comm_fd);
+
+    if ( !strncmp(rd_buffer, target_name, strlen(target_name)) )
+        return 0;
+
+err_exit:
+    close(comm_fd);
+    return -1;
+}
+
 
 int get_target_proc_cmdline( struct proc_cmd_info *proc_list, char* target_proc_name )
 {
@@ -99,21 +126,23 @@ int get_target_proc_cmdline( struct proc_cmd_info *proc_list, char* target_proc_
     d = opendir( "/proc" );
     if ( d )
     {
-
         while ( (dir = readdir(d)) != NULL )
         {
             if ( is_number_only(dir->d_name) )
             {
                 // read process name
                 char proc_cmd_line[MAX_CMD_FILE_LEN];
+                char proc_comm[MAX_CMD_FILE_LEN];
                 snprintf( proc_cmd_line, MAX_CMD_FILE_LEN,"/proc/%s/cmdline", dir->d_name );
+                snprintf( proc_comm, MAX_CMD_FILE_LEN,"/proc/%s/comm", dir->d_name );
 
                 // check to see if it has process name we're looking for
+                if ( !is_target_process(proc_comm, target_proc_name) )
                 {
                     char full_cmdline[MAX_CMD_LEN];
 
                     memset( &full_cmdline[0], 0x00, sizeof(full_cmdline) );
-                    
+
                     if ( !get_full_cmdline( full_cmdline, proc_cmd_line, target_proc_name ) )
                     {
                         //printf("[%s] %s\n", dir->d_name, full_cmdline );
@@ -122,7 +151,6 @@ int get_target_proc_cmdline( struct proc_cmd_info *proc_list, char* target_proc_
                         cnt++;
                     }
                 }
-                
             }
         }
         closedir( d );

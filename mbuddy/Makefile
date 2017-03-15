@@ -44,4 +44,4 @@ install:
 	cp ./mbuddy $(INSTALL_BIN)
 
 clean:
-	rm -rf *.o mbuddy
+	rm -rf *.o mbuddy mbuddy-gui.h
