@@ -730,6 +730,39 @@ static void showtemp(void)
 }
 
 /*
+ *  check fifo to see if data is there
+ *
+ */
+void check_mbuddy_fifo(void)
+{
+  // __BEGIN__mbuddy fifo processing
+  char rcv_buf[4096];
+  int  rd_cnt = 0;
+
+  /* open fifo and */
+  if ( mbuddy_fifo_fd <= 0 )
+  {
+    mbuddy_fifo_fd = open(mbuddy_fifo_path, O_RDONLY | O_NONBLOCK);
+    //werror(_("fifo open: %d \n"), mbuddy_fifo_fd);
+  }
+
+  if ( mbuddy_fifo_fd > 0 )
+  {
+    memset( rcv_buf, 0x00, sizeof(rcv_buf) );
+
+    /* read data */
+    rd_cnt = read( mbuddy_fifo_fd, rcv_buf, sizeof(rcv_buf));
+
+    if ( rd_cnt > 0 )
+    {
+      /* transmit to terminal */
+      rcv_buf[rd_cnt] = '\n';
+      mputs(rcv_buf, 1);
+    }
+  }
+}
+
+/*
  * The main terminal loop:
  *	- If there are characters received send them
  *	  to the screen via the appropriate translate function.
@@ -878,6 +911,8 @@ dirty_goto:
       }
       mc_wflush();
     }
+
+    check_mbuddy_fifo();
 
     /* Read from the keyboard and send to modem. */
     if ((x & 2) == 2) {

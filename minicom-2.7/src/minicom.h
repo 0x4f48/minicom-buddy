@@ -155,6 +155,10 @@ extern const char *Version;  /* Minicom verson */
 
 EXTERN int local_echo;      /* Local echo on/off. */
 
+/* mbuddy support */
+EXTERN char mbuddy_fifo_path[256];
+EXTERN int  mbuddy_fifo_fd;
+
 /* Forward declaration. */
 struct dialent;
 

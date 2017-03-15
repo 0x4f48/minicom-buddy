@@ -1004,6 +1004,23 @@ static void close_iconv(void)
 #endif
 /* -------------------------------------------- */
 
+static void prepare_fifo(void)
+{
+#define MAX_PATH_SIZE       256
+#define FIFO_PATH_FORMAT    "/tmp/_minicom_mbuddy_%d_"
+  snprintf( mbuddy_fifo_path, MAX_PATH_SIZE, FIFO_PATH_FORMAT, getpid() );
+
+  /* create fifo */
+  mkfifo(mbuddy_fifo_path, 0666);
+}
+
+static void cleanup_fifo(void)
+{
+    if ( mbuddy_fifo_fd > 0 )
+        close(mbuddy_fifo_fd);
+
+    unlink(mbuddy_fifo_path);
+}
 
 int main(int argc, char **argv)
 {
@@ -1461,6 +1478,7 @@ int main(int argc, char **argv)
     mc_wprintf(us, "WARNING: Option -T ignored, use -F now\n\n");
 
   mc_wprintf(us, "\n%s %s\r\n", _("Welcome to minicom"), VERSION);
+  mc_wprintf(us, "\n%s %d\r\n", _("PID: "), getpid());
   mc_wprintf(us, "\n%s: %s\r\n", _("OPTIONS"), option_string);
 #if defined (__DATE__) && defined (__TIME__)
   mc_wprintf(us, "%s %s, %s.\r\n",_("Compiled on"), __DATE__,__TIME__);
@@ -1496,6 +1514,9 @@ int main(int argc, char **argv)
   set_local_echo(local_echo);
   set_addlf(addlf);
   set_line_timestamp(line_timestamp);
+
+  /* prepare fifo for mbuddy */
+  prepare_fifo();
 
   /* The main loop calls do_terminal and gets a function key back. */
   while (!quit) {
@@ -1708,6 +1729,9 @@ dirty_goto:
     fastsystem(P_CALLIN, NULL, NULL, NULL);
 
   close_iconv();
+
+  /* clean up mbuddy fifo */
+  cleanup_fifo();
 
   return 0;
 }
