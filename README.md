@@ -10,6 +10,8 @@ The *mbuddy* is a GUI based minicom macro tool to overcome the issues above.
 This projects has two source code package, one is 'mbuddy' itself and 'minicom-2.7'.
 The minicom is slightly modified to work with mbuddy.
 
+See how it works @ https://www.youtube.com/watch?v=7liZnp4GTzA
+
 ## Building mbuddy
 
 ### 1. Required Libraries
@@ -37,10 +39,18 @@ $ sudo make install
 
 ## Building minicom-2.7
 
+### 1. Required Libraries
+
+libncurses5-dev
+
+### 2. Build
+
 Run the following commands.
 
 $ ./configure
 
 $ make
 
+### 3. Installation
 
+$ sudo make install
