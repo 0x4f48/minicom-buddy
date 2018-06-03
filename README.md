@@ -47,9 +47,15 @@ libncurses5-dev
 
 Run the following commands.
 
+$ sudo apt-get install libncurses5-dev
+
 $ ./configure
 
 $ make
+
+* If you have warning like "aclocal-1.14 is missing...", replace "aclocal-1.14" with "aclocal-1.15" (the version on your system) in the ./configure file. Run ./configure again and build the minicom.
+
+
 
 ### 3. Installation
 
