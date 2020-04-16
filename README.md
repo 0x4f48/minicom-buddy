@@ -12,6 +12,8 @@ The minicom is slightly modified to work with mbuddy.
 
 See how it works @ https://www.youtube.com/watch?v=7liZnp4GTzA
 
+[![mbuddy demo](https://img.youtube.com/vi/7liZnp4GTzA/0.jpg)](https://www.youtube.com/watch?v=7liZnp4GTzA)
+
 ## Building mbuddy
 
 ### 1. Required Libraries
