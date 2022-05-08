@@ -14,7 +14,15 @@ See how it works @ https://www.youtube.com/watch?v=7liZnp4GTzA
 
 [![mbuddy demo](https://img.youtube.com/vi/7liZnp4GTzA/0.jpg)](https://www.youtube.com/watch?v=7liZnp4GTzA)
 
-## Building mbuddy
+
+# mbuddy-standalone
+
+Few years later, I noticed that the mbuddy can write its commands to a ttyUSB device directly and 
+that will work with minicom without any change. It really helps me to use the mbuddy anywhere without 
+installing custom version of minicom.
+
+
+## Building mbuddy (and mbuddy-standalone)
 
 ### 1. Required Libraries
 
